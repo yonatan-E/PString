@@ -26,39 +26,39 @@ not_equals:
             movq    %rdi, %rax
             ret
 
-# this function copies a range of a given string to another string
+# this function copies a substring of a given string to another given string
             .type pstrijcpy, @function
 pstrijcpy:
             call    pstrlen
             cmpb    %al, %dl
-            jg      invalid
+            jg      index_out_of_range
             cmpb    %al,  %cl
-            jg      invalid
+            jg      index_out_of_range
 
             pushq   %rdi
             movq    %rsi, %rdi
             call    pstrlen
             popq    %rdi
             cmpb    %al, %dl
-            jg      invalid
+            jg      index_out_of_range
             cmpb    %al,  %cl
-            jg      invalid
+            jg      index_out_of_range
 
             cmpb    %cl, %dl
             jg      done
 loop:
-            movb    $-1(%rsi, %dl, ), $-1(%rdi, %dl, )
+            movb    $1(%rsi, %dl, ), $1(%rdi, %dl, )
             incb    %dl
             cmpb    %cl, %dl
             jle     loop
 done:
             movq    %rdi, %rax
             ret
-invalid:
+index_out_of_range:
             movq    $invalid_string, %rdi
             movq    $0, %rax
             call    printf
-            ret
+            jmp     done
 
 # this function replaces all of the upper case letters in a given string to normal case 
             .type swapCase, @function
@@ -79,4 +79,48 @@ not_upper_case:
             jg      loop
 
             movq    %rdi, %rax
+            ret
+
+# this function compares lexicographily between substrings of two given strings 
+            .type pstrijcmp, @function
+pstrijcmp:
+            call    pstrlen
+            cmpb    %al, %dl
+            jg      index_out_of_range
+            cmpb    %al,  %cl
+            jg      index_out_of_range
+
+            pushq   %rdi
+            movq    %rsi, %rdi
+            call    pstrlen
+            popq    %rdi
+            cmpb    %al, %dl
+            jg      index_out_of_range
+            cmpb    %al,  %cl
+            jg      index_out_of_range
+
+            cmpb    %cl, %dl
+            jg      done
+loop:
+            cmpb    $1(%rsi, %dl, ), $1(%rdi, %dl, )
+            jg      s1_is_greater
+            jl      s2_is_greater
+
+            incb    %dl
+            cmpb    %cl, %dl
+            jle     loop
+done:
+            movq    $0, %rax
+            ret
+s1_is_greater:
+                movq    $1, %rax
+                ret
+s1_is_greater:
+                movq    $-1, %rax
+                ret
+index_out_of_range:
+            movq    $invalid_string, %rdi
+            movq    $0, %rax
+            call    printf
+            movq    $-2, %rax
             ret
