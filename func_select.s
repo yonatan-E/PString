@@ -21,6 +21,7 @@ scanf_format:       .string     "%c"
 
         .text
 # this function calls a specific function according to the input
+        .globl  run_func
         .type   run_func, @function
 run_func:
         leaq    -50(%rdi), %rcx

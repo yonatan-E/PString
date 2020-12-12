@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "pstring.h"
 
+void run_func(int opt, Pstring *ps1, Pstring *ps2);
+
 void run_main() {
 
 	Pstring p1;
