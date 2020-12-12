@@ -28,13 +28,15 @@ run_func:
         jg      .L6
         jmp     *.L10(, %rcx, 8)
 .L0:
+        leaq    -2(%rsp), %rsp
+
         movq    %rsi, %rdi
         call    pstrlen
-        pushb   %al
+        movb    %al, 1(%rsp)
 
         movq    %rdx, %rdi
         call    pstrlen
-        pushb   %al
+        movb    %al, (%rsp)
 
         movsbq  (%rsp), %rdx
         movsbq  1(%rsp), %rsi
@@ -186,3 +188,4 @@ run_func:
         movq    $invalid_option_str, %rdi
         movq    $0, %rax
         call    printf
+        
