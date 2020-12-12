@@ -13,14 +13,14 @@ pstrlen:
 replaceChar:
         call    pstrlen
         xorb    %cl, %cl
-loop:
-        xorb    $1(%rdi, %al, ), %sil
+loop_1:
+        xorb    1(%rdi, %rax, ), %sil
         jne     not_equals
-        movb    %dl, 1(%rdi, %al, )
+        movb    %dl, 1(%rdi, %rax, )
 not_equals:
         incb    %cl
         cmpb    %cl, %al
-        jg      loop
+        jg      loop_1
 
         movq    %rdi, %rax
         ret
@@ -28,54 +28,56 @@ not_equals:
 # this function copies a substring of a given string to another given string
         .type   pstrijcpy, @function
 pstrijcpy:
+        movq    %rdi, %r8
+        movq    %rsi, %r9
+
         call    pstrlen
         cmpb    %al, %dl
-        jg      index_out_of_range
+        jg      index_out_of_range_1
         cmpb    %al,  %cl
-        jg      index_out_of_range
+        jg      index_out_of_range_1
 
-        pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
-        popq    %rdi
         cmpb    %al, %dl
-        jg      index_out_of_range
+        jg      index_out_of_range_1
         cmpb    %al,  %cl
-        jg      index_out_of_range
+        jg      index_out_of_range_1
 
         cmpb    %cl, %dl
-        jg      done
-loop:
-        movb    1(%rsi, %dl, ), 1(%rdi, %dl, )
+        jg      done_1
+loop_2:
+        movb    1(%r9, %rdx, ), %dil
+        movb    %dil, 1(%r8, %rdx, )
         incb    %dl
         cmpb    %cl, %dl
-        jle     loop
-done:
-        movq    %rdi, %rax
+        jle     loop_2
+done_1:
+        movq    %r8, %rax
         ret
-index_out_of_range:
+index_out_of_range_1:
         movq    $invalid_input_str, %rdi
         movq    $0, %rax
         call    printf
-        jmp     done
+        jmp     done_1
 
 # this function replaces all of the upper case letters in a given string to normal case 
         .type   swapCase, @function
 swapCase:
         call    pstrlen
         xorb    %sil, %sil
-loop:
-        movb    1(%rdi, %sil, ), %dl
-        cmpb    %dl, $65
-        jg      not_upper_case
+loop_3:
+        movb    1(%rdi, %rsi, ), %dl
+        cmpb    $65, %dl
+        jl      not_upper_case
         cmpb    $90, %dl
         jg      not_upper_case
         addb    $32, %dl
-        movb    %dl, $1(%rdi, %sil, )
+        movb    %dl, 1(%rdi, %rsi, )
 not_upper_case:
         incb    %sil
         cmpb    %sil, %al
-        jg      loop
+        jg      loop_3
 
         movq    %rdi, %rax
         ret
@@ -83,41 +85,43 @@ not_upper_case:
 # this function compares lexicographily between substrings of two given strings 
         .type   pstrijcmp, @function
 pstrijcmp:
+        movq    %rdi, %r8
+        movq    %rsi, %r9
+
         call    pstrlen
         cmpb    %al, %dl
-        jg      index_out_of_range
+        jg      index_out_of_range_2
         cmpb    %al,  %cl
-        jg      index_out_of_range
+        jg      index_out_of_range_2
 
-        pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
-        popq    %rdi
         cmpb    %al, %dl
-        jg      index_out_of_range
+        jg      index_out_of_range_2
         cmpb    %al,  %cl
-        jg      index_out_of_range
+        jg      index_out_of_range_2
 
         cmpb    %cl, %dl
-        jg      done
-loop:
-        cmpb    1(%rsi, %dl, ), 1(%rdi, %dl, )
+        jg      done_2
+loop_4:
+        movb    1(%r9, %rdx, ), %dil
+        cmpb    %dil, 1(%r8, %rdx, )
         jg      s1_is_greater
         jl      s2_is_greater
 
         incb    %dl
         cmpb    %cl, %dl
-        jle     loop
-done:
+        jle     loop_4
+done_2:
         movq    $0, %rax
         ret
 s1_is_greater:
         movq    $1, %rax
         ret
-s1_is_greater:
+s2_is_greater:
         movq    $-1, %rax
         ret
-index_out_of_range:
+index_out_of_range_2:
         movq    $invalid_input_str, %rdi
         movq    $0, %rax
         call    printf
