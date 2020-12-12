@@ -1,22 +1,24 @@
         .section        .rodata
 invalid_input_str:     .string     "invalid input!\n"
-            
+s:      .string     "%c %c\n"
         .text
 # this function calculates the length of a given string
+        .globl  pstrlen
         .type	pstrlen, @function
 pstrlen:
         movsbq  (%rdi), %rax
         ret
 
 # this function replaces all of the instances of a given char in a given string with another char
+        .globl  replaceChar
         .type   replaceChar, @function
 replaceChar:
         call    pstrlen
-        xorb    %cl, %cl
+        xorq    %rcx, %rcx
 loop_1:
-        xorb    1(%rdi, %rax, ), %sil
+        cmpb    1(%rdi, %rcx, ), %sil
         jne     not_equals
-        movb    %dl, 1(%rdi, %rax, )
+        movb    %dl, 1(%rdi, %rcx, )
 not_equals:
         incb    %cl
         cmpb    %cl, %al
@@ -26,17 +28,16 @@ not_equals:
         ret
 
 # this function copies a substring of a given string to another given string
+        .globl  pstrijcpy
         .type   pstrijcpy, @function
 pstrijcpy:
-        movq    %rdi, %r8
-        movq    %rsi, %r9
-
         call    pstrlen
         cmpb    %al, %dl
         jg      index_out_of_range_1
         cmpb    %al,  %cl
         jg      index_out_of_range_1
 
+        movq    %rdi, %r8
         movq    %rsi, %rdi
         call    pstrlen
         cmpb    %al, %dl
@@ -47,7 +48,7 @@ pstrijcpy:
         cmpb    %cl, %dl
         jg      done_1
 loop_2:
-        movb    1(%r9, %rdx, ), %dil
+        movb    1(%rsi, %rdx, ), %dil
         movb    %dil, 1(%r8, %rdx, )
         incb    %dl
         cmpb    %cl, %dl
@@ -62,10 +63,11 @@ index_out_of_range_1:
         jmp     done_1
 
 # this function replaces all of the upper case letters in a given string to normal case 
+        .globl  swapCase
         .type   swapCase, @function
 swapCase:
         call    pstrlen
-        xorb    %sil, %sil
+        xorq    %rsi, %rsi
 loop_3:
         movb    1(%rdi, %rsi, ), %dl
         cmpb    $65, %dl
@@ -82,18 +84,17 @@ not_upper_case:
         movq    %rdi, %rax
         ret
 
-# this function compares lexicographily between substrings of two given strings 
+# this function compares lexicographily between substrings of two given strings
+        .globl  pstrijcmp
         .type   pstrijcmp, @function
 pstrijcmp:
-        movq    %rdi, %r8
-        movq    %rsi, %r9
-
         call    pstrlen
         cmpb    %al, %dl
         jg      index_out_of_range_2
         cmpb    %al,  %cl
         jg      index_out_of_range_2
 
+        movq    %rdi, %r8
         movq    %rsi, %rdi
         call    pstrlen
         cmpb    %al, %dl
@@ -104,7 +105,7 @@ pstrijcmp:
         cmpb    %cl, %dl
         jg      done_2
 loop_4:
-        movb    1(%r9, %rdx, ), %dil
+        movb    1(%rsi, %rdx, ), %dil
         cmpb    %dil, 1(%r8, %rdx, )
         jg      s1_is_greater
         jl      s2_is_greater
