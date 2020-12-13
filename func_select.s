@@ -5,7 +5,7 @@ l2_str:     .string     "old char: %c, new char: %c, first string: %s, second st
 l3_str:     .string     "length: %d, string: %s\n"
 l5_str:     .string     "compare result: %d\n"
 invalid_option_str:     .string     "invalid option!\n"
-scanf_format:       .string     "%c"
+scanf_format:       .string     "%d"
 .L10:
         .quad       .L0
         .quad       .L6
@@ -52,7 +52,7 @@ run_func:
         pushq   %r12
         movq    %rsi, %rbx
         movq    %rdx, %r12
-        leaq    -2(%rsp), %rsp
+        subq    $2, %rsp
 
         leaq    1(%rsp), %rsi
         movq    $scanf_format, %rdi
@@ -82,7 +82,7 @@ run_func:
         movq    $0, %rax
         call printf
 
-        leaq    2(%rsp), %rsp
+        addq    $2, %rsp
         popq    %r12
         popq    %rbx
 

@@ -37,9 +37,10 @@ pstrijcpy:
         cmpb    %al,  %cl
         jg      index_out_of_range_1
 
-        movq    %rdi, %r8
+        pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
+        popq    %rdi
         cmpb    %al, %dl
         jg      index_out_of_range_1
         cmpb    %al,  %cl
@@ -48,13 +49,13 @@ pstrijcpy:
         cmpb    %cl, %dl
         jg      done_1
 loop_2:
-        movb    1(%rsi, %rdx, ), %dil
-        movb    %dil, 1(%r8, %rdx, )
+        movb    1(%rsi, %rdx, ), %al
+        movb    %al, 1(%rdi, %rdx, )
         incb    %dl
         cmpb    %cl, %dl
         jle     loop_2
 done_1:
-        movq    %r8, %rax
+        movq    %rdi, %rax
         ret
 index_out_of_range_1:
         movq    $invalid_input_str, %rdi
@@ -94,9 +95,10 @@ pstrijcmp:
         cmpb    %al,  %cl
         jg      index_out_of_range_2
 
-        movq    %rdi, %r8
+        pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
+        popq    %rdi
         cmpb    %al, %dl
         jg      index_out_of_range_2
         cmpb    %al,  %cl
@@ -105,8 +107,8 @@ pstrijcmp:
         cmpb    %cl, %dl
         jg      done_2
 loop_4:
-        movb    1(%rsi, %rdx, ), %dil
-        cmpb    %dil, 1(%r8, %rdx, )
+        movb    1(%rsi, %rdx, ), %al
+        cmpb    %al, 1(%rdi, %rdx, )
         jg      s1_is_greater
         jl      s2_is_greater
 
