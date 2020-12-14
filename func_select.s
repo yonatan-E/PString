@@ -1,11 +1,11 @@
         .section        .rodata
-        .align      8
 l0_str:     .string     "first pstring length: %d, second pstring length: %d\n"
 l2_str:     .string     "old char: %c, new char: %c, first string: %s, second string: %s\n"
 l3_str:     .string     "length: %d, string: %s\n"
 l5_str:     .string     "compare result: %d\n"
 invalid_option_str:     .string     "invalid option!\n"
 scanf_format:       .string     "%d"
+        .align      8
 .L10:
         .quad       .L0
         .quad       .L6
