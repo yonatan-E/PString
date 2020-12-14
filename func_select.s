@@ -102,11 +102,11 @@ run_func:
         movq    %rdx, %r12
 
         leaq    -1(%rbp), %rsi
-        movq    $scanf_format, %rdi
+        movq    $scanf_format_int8, %rdi
         movq    $0, %rax
         call    scanf
         movq    -2(%rbp), %rsi
-        movq    $scanf_format, %rdi
+        movq    $scanf_format_int8, %rdi
         movq    $0, %rax
         call    scanf
 
@@ -169,11 +169,11 @@ run_func:
         pushq   %rdx
 
         leaq    -1(%rbp), %rsi
-        movq    $scanf_format, %rdi
+        movq    $scanf_format_int8, %rdi
         movq    $0, %rax
         call    scanf
         leaq    -2(%rbp), %rsi
-        movq    $scanf_format, %rdi
+        movq    $scanf_format_int8, %rdi
         movq    $0, %rax
         call    scanf
 
@@ -196,4 +196,3 @@ run_func:
 done:
         leave
         ret
-        
