@@ -68,18 +68,18 @@ index_out_of_range_1:
         .type   swapCase, @function
 swapCase:
         call    pstrlen
-        xorq    %rsi, %rsi
+        xorq    %rcx, %rcx
 loop_3:
-        movb    1(%rdi, %rsi, ), %dl
+        movb    1(%rdi, %rcx, ), %dl
         cmpb    $65, %dl
         jl      not_upper_case
         cmpb    $90, %dl
         jg      not_upper_case
         addb    $32, %dl
-        movb    %dl, 1(%rdi, %rsi, )
+        movb    %dl, 1(%rdi, %rcx, )
 not_upper_case:
-        incb    %sil
-        cmpb    %sil, %al
+        incb    %cl
+        cmpb    %cl, %al
         jg      loop_3
 
         movq    %rdi, %rax
