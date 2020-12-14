@@ -82,8 +82,8 @@ run_func:
 
         movq    %r12, %r8
         movq    %rbx, %rcx
-        movsbq  (%rsp), %rdx
-        movsbq  1(%rsp), %rsi
+        movsbq  -2(%rbp), %rdx
+        movsbq  -1(%rbp), %rsi
         movq    $l2_str, %rdi
         movq    $0, %rax
         call printf
