@@ -63,7 +63,7 @@ run_func:
         movq    $scanf_format_char, %rdi
         movq    $0, %rax
         call    scanf
-        movq    -2(%rbp), %rsi
+        leaq    -2(%rbp), %rsi
         movq    $scanf_format_char, %rdi
         movq    $0, %rax
         call    scanf
@@ -105,7 +105,7 @@ run_func:
         movq    $scanf_format_int8, %rdi
         movq    $0, %rax
         call    scanf
-        movq    -2(%rbp), %rsi
+        leaq    -2(%rbp), %rsi
         movq    $scanf_format_int8, %rdi
         movq    $0, %rax
         call    scanf
