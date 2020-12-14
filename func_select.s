@@ -29,7 +29,7 @@ run_func:
         jg      .L6
         jmp     *.L10(, %rcx, 8)
 .L0:
-        leaq    -2(%rsp), %rsp
+        subq    $2, %rsp
 
         movq    %rsi, %rdi
         call    pstrlen
@@ -41,11 +41,11 @@ run_func:
 
         movsbq  (%rsp), %rdx
         movsbq  1(%rsp), %rsi
-        leaq    2(%rsp), %rsp
         movq    $l0_str, %rdi
         movq    $0, %rax
         call    printf
 
+        addq    $2, %rsp
         ret
 .L2:    
         pushq   %rbx
@@ -85,14 +85,13 @@ run_func:
         addq    $2, %rsp
         popq    %r12
         popq    %rbx
-
         ret
 .L3:
         pushq   %rbx
         pushq   %r12
         movq    %rsi, %rbx
         movq    %rdx, %r12
-        leaq    -2(%rsp), %rsp
+        subq    $2, %rsp
 
         leaq    1(%rsp), %rsi
         movq    $scanf_format, %rdi
@@ -126,42 +125,39 @@ run_func:
         movq    $0, %rax
         call printf
 
-        leaq    2(%rsp), %rsp
+        addq    $2, %rsp
         popq    %r12
         popq    %rbx
-
         ret
 .L4:
-        movq    %rsi, %rdi
-        call    swapCase
-        pushq   %rax
         movq    %rdx, %rdi
         call    swapCase
         pushq   %rax
+        movq    %rsi, %rdi
+        call    swapCase
+        pushq   %rax
 
-        movq    8(%rsp), %rdi
+        popq    %rdi
         call    pstrlen
-        movq    8(%rsp), %rdx
+        movq    %rdi, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
         call printf
 
-        movq    (%rsp), %rdi
+        popq    %rdi
         call    pstrlen
-        movq    (%rsp), %rdx
+        movq    %rdi, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
         call printf
-
-        leaq    16(%rsp), %rsp
 
         ret
 .L5:
         pushq   %rsi
         pushq   %rdx
-        leaq    -2(%rsp), %rsp
+        subq    $2, %rsp
 
         leaq    1(%rsp), %rsi
         movq    $scanf_format, %rdi
@@ -174,7 +170,7 @@ run_func:
 
         movsbq  (%rsp), %rcx
         movsbq  1(%rsp), %rdx
-        leaq    2(%rsp), %rsp
+        addq    $2, %rsp
         popq    %rsi
         popq    %rdi
         call    pstrijcmp
