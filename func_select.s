@@ -138,28 +138,37 @@ run_func:
         
         jmp done
 .L4:
-        movq    %rdx, %rdi
-        call    swapCase
-        pushq   %rax
-        movq    %rsi, %rdi
-        call    swapCase
-        pushq   %rax
+        pushq   %rbx
+        pushq   %r12
 
-        popq    %rdi
+        movq    %rsi, %rbx
+        movq    %rdx, %r12
+
+        movq    %rbx, %rdi
+        call    swapCase
+        movq    %rax, %rbx
+        movq    %r12, %rdi
+        call    swapCase
+        movq    %rax, %r12
+
+        movq    %rbx, %rdi
         call    pstrlen
-        movq    %rdi, %rdx
+        movq    %rbx, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
         call printf
 
-        popq    %rdi
+        movq    %r12, %rdi
         call    pstrlen
-        movq    %rdi, %rdx
+        movq    %r12, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
         call printf
+
+        popq    %r12
+        popq    %rbx
 
         jmp done
 .L5:
