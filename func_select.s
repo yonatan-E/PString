@@ -4,7 +4,8 @@ l2_str:     .string     "old char: %c, new char: %c, first string: %s, second st
 l3_str:     .string     "length: %d, string: %s\n"
 l5_str:     .string     "compare result: %d\n"
 invalid_option_str:     .string     "invalid option!\n"
-scanf_format:       .string     "%d"
+scanf_format_char:       .string     " %c"
+scanf_format_int8:       .string     " %hhd"
         .align      8
 .L10:
         .quad       .L0
@@ -24,6 +25,9 @@ scanf_format:       .string     "%d"
         .globl  run_func
         .type   run_func, @function
 run_func:
+        pushq   %rbp
+        movq    %rsp, %rbp
+
         leaq    -50(%rdi), %rcx
         cmpq    $10, %rcx
         jg      .L6
@@ -44,66 +48,70 @@ run_func:
         movq    $l0_str, %rdi
         movq    $0, %rax
         call    printf
-
-        addq    $2, %rsp
-        ret
+        
+        jmp done
 .L2:    
+        subq    $16, %rsp
+
         pushq   %rbx
         pushq   %r12
+
         movq    %rsi, %rbx
         movq    %rdx, %r12
-        subq    $2, %rsp
 
-        leaq    1(%rsp), %rsi
-        movq    $scanf_format, %rdi
+        leaq    -1(%rbp), %rsi
+        movq    $scanf_format_char, %rdi
         movq    $0, %rax
         call    scanf
-        movq    %rsp, %rsi
-        movq    $scanf_format, %rdi
+        movq    -2(%rbp), %rsi
+        movq    $scanf_format_char, %rdi
         movq    $0, %rax
         call    scanf
 
-        movsbq  (%rsp), %rdx
-        movsbq  1(%rsp), %rsi
+        movsbq  -2(%rbp), %rdx
+        movsbq  -1(%rbp), %rsi
         movq    %rbx, %rdi
         call    replaceChar
         movq    %rax, %rbx
 
-        movsbq  (%rsp), %rdx
-        movsbq  1(%rsp), %rsi
+        movsbq  -2(%rbp), %rdx
+        movsbq  -1(%rbp), %rsi
         movq    %r12, %rdi
         call    replaceChar
         movq    %rax, %r12
 
-        movq    %r12, %rcx
-        movq    %rbx, %rdx
-        movsbq  (%rsp), %rsi
-        movsbq  1(%rsp), %rdi
+        movq    %r12, %r8
+        movq    %rbx, %rcx
+        movsbq  (%rsp), %rdx
+        movsbq  1(%rsp), %rsi
+        movq    $l2_str, %rdi
         movq    $0, %rax
         call printf
 
-        addq    $2, %rsp
         popq    %r12
         popq    %rbx
-        ret
+        
+        jmp done
 .L3:
+        subq    $16, %rsp
+
         pushq   %rbx
         pushq   %r12
+
         movq    %rsi, %rbx
         movq    %rdx, %r12
-        subq    $2, %rsp
 
-        leaq    1(%rsp), %rsi
+        leaq    -1(%rbp), %rsi
         movq    $scanf_format, %rdi
         movq    $0, %rax
         call    scanf
-        movq    %rsp, %rsi
+        movq    -2(%rbp), %rsi
         movq    $scanf_format, %rdi
         movq    $0, %rax
         call    scanf
 
-        movsbq  (%rsp), %rcx
-        movsbq  1(%rsp), %rdx
+        movsbq  -2(%rbp), %rcx
+        movsbq  -1(%rbp), %rdx
         movq    %r12, %rsi
         movq    %rbx, %rdi
         call    pstrijcpy
@@ -125,10 +133,10 @@ run_func:
         movq    $0, %rax
         call printf
 
-        addq    $2, %rsp
         popq    %r12
         popq    %rbx
-        ret
+        
+        jmp done
 .L4:
         movq    %rdx, %rdi
         call    swapCase
@@ -153,24 +161,24 @@ run_func:
         movq    $0, %rax
         call printf
 
-        ret
+        jmp done
 .L5:
+        subq    $16, %rsp
+
         pushq   %rsi
         pushq   %rdx
-        subq    $2, %rsp
 
-        leaq    1(%rsp), %rsi
+        leaq    -1(%rbp), %rsi
         movq    $scanf_format, %rdi
         movq    $0, %rax
         call    scanf
-        movq    %rsp, %rsi
+        leaq    -2(%rbp), %rsi
         movq    $scanf_format, %rdi
         movq    $0, %rax
         call    scanf
 
-        movsbq  (%rsp), %rcx
-        movsbq  1(%rsp), %rdx
-        addq    $2, %rsp
+        movsbq  -2(%rbp), %rcx
+        movsbq  -1(%rbp), %rdx
         popq    %rsi
         popq    %rdi
         call    pstrijcmp
@@ -180,9 +188,12 @@ run_func:
         movq    $0, %rax
         call    printf
 
-        ret
+        jmp done
 .L6:
         movq    $invalid_option_str, %rdi
         movq    $0, %rax
         call    printf
+done:
+        leave
+        ret
         
