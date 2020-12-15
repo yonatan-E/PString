@@ -10,7 +10,7 @@ run_main:
 		pushq	%rbp
 		movq	%rsp, %rbp
 
-		subq	$520, %rsp	# allocation memory for the both strings, and also changing the alignment of %rsp to 16
+		subq	$512, %rsp	# allocation memory for the both strings
 
 		leaq	-256(%rbp), %rsi
 		movq	$scanf_format_int8, %rdi
@@ -29,6 +29,8 @@ run_main:
 		movq	$scanf_format_string, %rdi
 		movq	$0, %rax
 		call	scanf
+
+		subq	$16, %rsp # allocating memory for the option var, and setting the alignment of %rsp to 16
 
 		movq	%rsp, %rsi
 		movq	$scanf_format_int8, %rdi
