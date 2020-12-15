@@ -22,7 +22,7 @@ scanf_format_int8:       .string     " %hhd"
 
         .text
 # this function calls a specific function according to the input
-        .globl  run_func
+.globl  run_func
         .type   run_func, @function
 run_func:
         pushq   %rbp

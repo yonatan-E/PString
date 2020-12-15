@@ -3,14 +3,14 @@ invalid_input_str:     .string     "invalid input!\n"
 s:      .string     "%c %c\n"
         .text
 # this function calculates the length of a given string
-        .globl  pstrlen
+.globl  pstrlen
         .type	pstrlen, @function
 pstrlen:
         movsbq  (%rdi), %rax
         ret
 
 # this function replaces all of the instances of a given char in a given string with another char
-        .globl  replaceChar
+.globl  replaceChar
         .type   replaceChar, @function
 replaceChar:
         call    pstrlen
@@ -28,7 +28,7 @@ not_equals:
         ret
 
 # this function copies a substring of a given string to another given string
-        .globl  pstrijcpy
+.globl  pstrijcpy
         .type   pstrijcpy, @function
 pstrijcpy:
         call    pstrlen
@@ -64,7 +64,7 @@ index_out_of_range_1:
         jmp     done_1
 
 # this function replaces all of the upper case letters in a given string to normal case 
-        .globl  swapCase
+.globl  swapCase
         .type   swapCase, @function
 swapCase:
         call    pstrlen
@@ -86,7 +86,7 @@ not_upper_case:
         ret
 
 # this function compares lexicographily between substrings of two given strings
-        .globl  pstrijcmp
+.globl  pstrijcmp
         .type   pstrijcmp, @function
 pstrijcmp:
         call    pstrlen
