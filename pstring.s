@@ -6,7 +6,7 @@ s:      .string     "%c %c\n"
 .globl  pstrlen
         .type	pstrlen, @function
 pstrlen:
-        movsbq  (%rdi), %rax
+        movzbq  (%rdi), %rax
         ret
 
 # this function replaces all of the instances of a given char in a given string with another char
@@ -22,7 +22,7 @@ loop_1:
 not_equals:
         incb    %cl
         cmpb    %cl, %al
-        jg      loop_1
+        ja      loop_1
 
         movq    %rdi, %rax
         ret
@@ -33,27 +33,27 @@ not_equals:
 pstrijcpy:
         call    pstrlen
         cmpb    %al, %dl
-        jg      index_out_of_range_1
+        jae      index_out_of_range_1
         cmpb    %al,  %cl
-        jg      index_out_of_range_1
+        jae      index_out_of_range_1
 
         pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
         popq    %rdi
         cmpb    %al, %dl
-        jg      index_out_of_range_1
+        jae      index_out_of_range_1
         cmpb    %al,  %cl
-        jg      index_out_of_range_1
+        jae      index_out_of_range_1
 
         cmpb    %cl, %dl
-        jg      done_1
+        ja      done_1
 loop_2:
         movb    1(%rsi, %rdx, ), %al
         movb    %al, 1(%rdi, %rdx, )
         incb    %dl
         cmpb    %cl, %dl
-        jle     loop_2
+        jbe     loop_2
 done_1:
         movq    %rdi, %rax
         ret
@@ -80,7 +80,7 @@ loop_3:
 not_upper_case:
         incb    %cl
         cmpb    %cl, %al
-        jg      loop_3
+        ja      loop_3
 
         movq    %rdi, %rax
         ret
@@ -91,21 +91,21 @@ not_upper_case:
 pstrijcmp:
         call    pstrlen
         cmpb    %al, %dl
-        jg      index_out_of_range_2
+        jae     index_out_of_range_2
         cmpb    %al,  %cl
-        jg      index_out_of_range_2
+        jae      index_out_of_range_2
 
         pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
         popq    %rdi
         cmpb    %al, %dl
-        jg      index_out_of_range_2
+        jae      index_out_of_range_2
         cmpb    %al,  %cl
-        jg      index_out_of_range_2
+        jae      index_out_of_range_2
 
         cmpb    %cl, %dl
-        jg      done_2
+        ja      done_2
 loop_4:
         movb    1(%rsi, %rdx, ), %al
         cmpb    %al, 1(%rdi, %rdx, )
@@ -114,7 +114,7 @@ loop_4:
 
         incb    %dl
         cmpb    %cl, %dl
-        jle     loop_4
+        jbe     loop_4
 done_2:
         movq    $0, %rax
         ret
