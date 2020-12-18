@@ -31,16 +31,17 @@ not_equals:
 .globl  pstrijcpy
         .type   pstrijcpy, @function
 pstrijcpy:
+        pushq   %rbx
+        movq    %rdi, %rbx
+
         call    pstrlen
         cmpb    %al, %dl
         jae      index_out_of_range_1
         cmpb    %al,  %cl
         jae      index_out_of_range_1
 
-        pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
-        popq    %rdi
         cmpb    %al, %dl
         jae      index_out_of_range_1
         cmpb    %al,  %cl
@@ -55,7 +56,9 @@ loop_2:
         cmpb    %cl, %dl
         jbe     loop_2
 done_1:
-        movq    %rdi, %rax
+        movq    %rbx, %rax
+
+        popq    %rbx
         ret
 index_out_of_range_1:
         movq    $invalid_input_str, %rdi
