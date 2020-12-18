@@ -2,7 +2,7 @@
 invalid_input_str:     .string     "invalid input!\n"
 
         .text
-# this function calculates the length of a given pstring.
+# this function gets the length of a given pstring.
 # params:
 # %rdi holds the address of the pstring
 # return val:
@@ -10,7 +10,7 @@ invalid_input_str:     .string     "invalid input!\n"
 .globl  pstrlen
         .type	pstrlen, @function
 pstrlen:
-        # returning the length of the pstring, which is located at the first byte of the pstring
+        # setting the return value to be the length of the pstring. the length of the pstring is located at the first byte of the pstring
         movzbq  (%rdi), %rax
         ret
 
@@ -39,7 +39,7 @@ not_equals:
         incb    %cl
         cmpb    %cl, %al
         ja      loop_1
-
+        # setting the return value to be the address of the pstring
         movq    %rdi, %rax
         ret
 
@@ -79,14 +79,15 @@ pstrijcpy:
 loop_2:
         # copying the char at the current place at the source pstring to the same place at the destination pstring
         movb    1(%rsi, %rdx, ), %al
-        movb    %al, 1(%rdi, %rdx, )
+        movb    %al, 1(%rbx, %rdx, )
         # incrementing the index and checking if the end of the pstring has been reached
         incb    %dl
         cmpb    %cl, %dl
         jbe     loop_2
 done_1:
+        # setting the return value to be the address of the pstring
         movq    %rbx, %rax
-        # popping the old %rbx
+        # restoring the old %rbx
         popq    %rbx
         ret
 index_out_of_range_1:
@@ -123,7 +124,7 @@ not_upper_case:
         incb    %cl
         cmpb    %cl, %al
         ja      loop_3
-
+        # setting the return value to be the address of the pstring
         movq    %rdi, %rax
         ret
 
@@ -138,6 +139,11 @@ not_upper_case:
 .globl  pstrijcmp
         .type   pstrijcmp, @function
 pstrijcmp:
+        # saving the old %rbx
+        pushq   %rbx
+        # saving %rdi at %rbx
+        movq    %rdi, %rbx
+
         # checking if the given indices are in the range of the first pstring
         call    pstrlen
         cmpb    %al, %dl
@@ -146,44 +152,45 @@ pstrijcmp:
         jae      index_out_of_range_2
 
         # checking if the given indices are in the range of the second pstring
-        pushq   %rdi
         movq    %rsi, %rdi
         call    pstrlen
-        popq    %rdi
         cmpb    %al, %dl
         jae      index_out_of_range_2
         cmpb    %al,  %cl
         jae      index_out_of_range_2
 
         cmpb    %cl, %dl
-        ja      done_2
+        ja      equals
 loop_4:
         # comparing between the char at the current place in the first pstring and in the second pstring
         movb    1(%rsi, %rdx, ), %al
-        cmpb    %al, 1(%rdi, %rdx, )
+        cmpb    %al, 1(%rbx, %rdx, )
         jg      s1_is_greater
         jl      s2_is_greater
         # incrementing the index and checking if the end of the pstring has been reached
         incb    %dl
         cmpb    %cl, %dl
         jbe     loop_4
-done_2:
-        # if equals, then returns 0
+equals:
+        # if equals, then setting the return value to be 0
         movq    $0, %rax
-        ret
+        jmp     done_2
 s1_is_greater:
-        # if the first is bigger, then returning 1
+        # if the first is bigger, then setting the return value to be 1
         movq    $1, %rax
-        ret
+        jmp     done_2
 s2_is_greater:
-        # if the second is bigger, then returning -1
+        # if the second is bigger, then setting the return value to be -1
         movq    $-1, %rax
-        ret
+        jmp     done_2
 index_out_of_range_2:
         # printing an error message
         movq    $invalid_input_str, %rdi
         movq    $0, %rax
         call    printf
-        # if an error has occured, then returning -2
+        # if an error has occured, then setting the return value to be -2
         movq    $-2, %rax
+done_2:
+        # restoring the old %rbx
+        popq    %rbx
         ret
