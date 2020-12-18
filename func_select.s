@@ -7,6 +7,7 @@ invalid_option_str:     .string     "invalid option!\n"
 scanf_format_char:       .string     " %c"
 scanf_format_int8:       .string     " %hhd"
         .align      8
+# the jump table for the switch-case
 .L10:
         .quad       .L0
         .quad       .L6
@@ -21,44 +22,58 @@ scanf_format_int8:       .string     " %hhd"
         .quad       .L0
 
         .text
-# this function calls a specific function according to the input
-        .globl  run_func
+# this function calls a specific pstring function according to the input.
+# params:
+# %rdi holds the number of the option
+# %rsi holds the address of the first pstring
+# %rdx holds the address of the second pstring
+.globl  run_func
         .type   run_func, @function
 run_func:
+        # saving the old %rbp
         pushq   %rbp
+        # setting %rbp to the start of the current stack frame
         movq    %rsp, %rbp
 
+        # jumping to a label according to the option number
         leaq    -50(%rdi), %rcx
         cmpq    $10, %rcx
-        jg      .L6
+        ja      .L6
+        # jumping using the jump table
         jmp     *.L10(, %rcx, 8)
 .L0:
-        subq    $2, %rsp
+        # allocating memory on the stack
+        leaq    -2(%rsp), %rsp
 
+        # getting the length of the first pstring
         movq    %rsi, %rdi
         call    pstrlen
         movb    %al, 1(%rsp)
-
+        # getting the length of the second pstring
         movq    %rdx, %rdi
         call    pstrlen
         movb    %al, (%rsp)
 
-        movsbq  (%rsp), %rdx
-        movsbq  1(%rsp), %rsi
+        # printing "first pstring length: %d, second pstring length: %d\n"
+        movzbq  (%rsp), %rdx
+        movzbq  1(%rsp), %rsi
         movq    $l0_str, %rdi
         movq    $0, %rax
         call    printf
         
         jmp done
 .L2:    
-        subq    $16, %rsp
+        # allocating memory on the stack, while keeping the alignment of %rsp to be 16
+        leaq    -16(%rsp), %rsp
 
+        # saving the old %rbx and %r12
         pushq   %rbx
         pushq   %r12
-
+        # saving %rsi at %rbx, and %rdx at %r12
         movq    %rsi, %rbx
         movq    %rdx, %r12
 
+        # scanning the old char and the new char
         leaq    -1(%rbp), %rsi
         movq    $scanf_format_char, %rdi
         movq    $0, %rax
@@ -68,39 +83,45 @@ run_func:
         movq    $0, %rax
         call    scanf
 
-        movsbq  -2(%rbp), %rdx
-        movsbq  -1(%rbp), %rsi
+        # calling replaceChar with the first pstring, and with the scanned old char and new char
+        movzbq  -2(%rbp), %rdx
+        movzbq  -1(%rbp), %rsi
         movq    %rbx, %rdi
         call    replaceChar
         movq    %rax, %rbx
-
-        movsbq  -2(%rbp), %rdx
-        movsbq  -1(%rbp), %rsi
+        # calling replaceChar with the second pstring, and with the scanned old char and new char
+        movzbq  -2(%rbp), %rdx
+        movzbq  -1(%rbp), %rsi
         movq    %r12, %rdi
         call    replaceChar
         movq    %rax, %r12
 
+        # printing "old char: %c, new char: %c, first string: %s, second string: %s\n"
         movq    %r12, %r8
         movq    %rbx, %rcx
-        movsbq  (%rsp), %rdx
-        movsbq  1(%rsp), %rsi
+        movzbq  -2(%rbp), %rdx
+        movzbq  -1(%rbp), %rsi
         movq    $l2_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
+        # restoring the old %r12 and %rbx
         popq    %r12
         popq    %rbx
         
-        jmp done
+        jmp     done
 .L3:
-        subq    $16, %rsp
+        # allocating memory on the stack, while keeping the alignment of %rsp to be 16
+        leaq    -16(%rsp), %rsp
 
+        # saving the old %rbx and %r12
         pushq   %rbx
         pushq   %r12
-
+        # saving %rsi at %rbx, and %rdx at %r12
         movq    %rsi, %rbx
         movq    %rdx, %r12
 
+        # scanning the first index and the last index of the substring
         leaq    -1(%rbp), %rsi
         movq    $scanf_format_int8, %rdi
         movq    $0, %rax
@@ -110,64 +131,84 @@ run_func:
         movq    $0, %rax
         call    scanf
 
-        movsbq  -2(%rbp), %rcx
-        movsbq  -1(%rbp), %rdx
+        # calling pstrijcpy with the first pstring as the destination, the second pstring as the source, and with the scanned indices
+        movzbq  -2(%rbp), %rcx
+        movzbq  -1(%rbp), %rdx
         movq    %r12, %rsi
         movq    %rbx, %rdi
         call    pstrijcpy
         movq    %rax, %rbx
 
+        # printing "length: %d, string: %s\n" for the first pstring
         movq    %rbx, %rdi
         call    pstrlen
         movq    %rbx, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
-
+        call    printf
+        # printing "length: %d, string: %s\n" for the second pstring
         movq    %r12, %rdi
         call    pstrlen
         movq    %r12, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
+        # restoring the old %r12 and %rbx
         popq    %r12
         popq    %rbx
         
-        jmp done
+        jmp     done
 .L4:
-        movq    %rdx, %rdi
-        call    swapCase
-        pushq   %rax
-        movq    %rsi, %rdi
-        call    swapCase
-        pushq   %rax
+        # saving the old %rbx and %r12
+        pushq   %rbx
+        pushq   %r12
+        # saving %rsi at %rbx, and %rdx at %r12
+        movq    %rsi, %rbx
+        movq    %rdx, %r12
 
-        popq    %rdi
+        # calling swapCase with the first pstring
+        movq    %rbx, %rdi
+        call    swapCase
+        movq    %rax, %rbx
+        # calling swapCase with the second pstring
+        movq    %r12, %rdi
+        call    swapCase
+        movq    %rax, %r12
+
+        # printing "length: %d, string: %s\n" for the first pstring
+        movq    %rbx, %rdi
         call    pstrlen
-        movq    %rdi, %rdx
+        movq    %rbx, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
-
-        popq    %rdi
+        call    printf
+        # printing "length: %d, string: %s\n" for the second pstring
+        movq    %r12, %rdi
         call    pstrlen
-        movq    %rdi, %rdx
+        movq    %r12, %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
-        jmp done
+        # restoring the old %r12 and %rbx
+        popq    %r12
+        popq    %rbx
+
+        jmp     done
 .L5:
-        subq    $16, %rsp
+        # allocating memory on the stack, while keeping the alignment of %rsp to be 16
+        leaq    -16(%rsp), %rsp
 
+        # saving %rsi and %rdx on the stack
         pushq   %rsi
         pushq   %rdx
 
+        # scanning the first index and the last index of the substrings
         leaq    -1(%rbp), %rsi
         movq    $scanf_format_int8, %rdi
         movq    $0, %rax
@@ -177,22 +218,26 @@ run_func:
         movq    $0, %rax
         call    scanf
 
-        movsbq  -2(%rbp), %rcx
-        movsbq  -1(%rbp), %rdx
+        # calling pstrijcmp with the first pstring, the second pstring, and the scanned indices
+        movzbq  -2(%rbp), %rcx
+        movzbq  -1(%rbp), %rdx
         popq    %rsi
         popq    %rdi
         call    pstrijcmp
 
+        # printing "compare result: %d\n"
         movq    %rax, %rsi
         movq    $l5_str, %rdi
         movq    $0, %rax
         call    printf
 
-        jmp done
+        jmp     done
 .L6:
+        # printing an error message
         movq    $invalid_option_str, %rdi
         movq    $0, %rax
         call    printf
 done:
+        # deallocating the memory of the current stack frame and restoring the previous %rbp
         leave
         ret
