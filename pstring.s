@@ -97,7 +97,7 @@ index_out_of_range_1:
         call    printf
         jmp     done_1
 
-# this function replaces all of the upper case letters in a given pstring to normal case.
+# this function replaces all of the upper case letters in a given pstring to normal case letters.
 # params:
 # %rdi holds the address of the pstring
 # return val:
