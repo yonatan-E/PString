@@ -4,9 +4,9 @@ scanf_format_int8:       .string     " %hhd"
 
 		.text
 # this function scans two pstrings and an option number, and calls run_func with those arguments.
-.globl	run_main
+.globl	main
 		.type run_main, @function
-run_main:
+main:
 		# saving the old %rbp
 		pushq	%rbp
 		# setting %rbp to the start of the current stack frame
