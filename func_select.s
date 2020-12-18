@@ -30,10 +30,10 @@ run_func:
 
         leaq    -50(%rdi), %rcx
         cmpq    $10, %rcx
-        jg      .L6
+        ja      .L6
         jmp     *.L10(, %rcx, 8)
 .L0:
-        subq    $2, %rsp
+        leaq    -2(%rsp), %rsp
 
         movq    %rsi, %rdi
         call    pstrlen
@@ -43,15 +43,15 @@ run_func:
         call    pstrlen
         movb    %al, (%rsp)
 
-        movsbq  (%rsp), %rdx
-        movsbq  1(%rsp), %rsi
+        movzbq  (%rsp), %rdx
+        movzbq  1(%rsp), %rsi
         movq    $l0_str, %rdi
         movq    $0, %rax
         call    printf
         
         jmp done
 .L2:    
-        subq    $16, %rsp
+        leaq    -16(%rsp), %rsp
 
         pushq   %rbx
         pushq   %r12
@@ -68,32 +68,32 @@ run_func:
         movq    $0, %rax
         call    scanf
 
-        movsbq  -2(%rbp), %rdx
-        movsbq  -1(%rbp), %rsi
+        movzbq  -2(%rbp), %rdx
+        movzbq  -1(%rbp), %rsi
         movq    %rbx, %rdi
         call    replaceChar
         movq    %rax, %rbx
 
-        movsbq  -2(%rbp), %rdx
-        movsbq  -1(%rbp), %rsi
+        movzbq  -2(%rbp), %rdx
+        movzbq  -1(%rbp), %rsi
         movq    %r12, %rdi
         call    replaceChar
         movq    %rax, %r12
 
         movq    %r12, %r8
         movq    %rbx, %rcx
-        movsbq  -2(%rbp), %rdx
-        movsbq  -1(%rbp), %rsi
+        movzbq  -2(%rbp), %rdx
+        movzbq  -1(%rbp), %rsi
         movq    $l2_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
         popq    %r12
         popq    %rbx
         
-        jmp done
+        jmp     done
 .L3:
-        subq    $16, %rsp
+        leaq    -16(%rsp), %rsp
 
         pushq   %rbx
         pushq   %r12
@@ -110,8 +110,8 @@ run_func:
         movq    $0, %rax
         call    scanf
 
-        movsbq  -2(%rbp), %rcx
-        movsbq  -1(%rbp), %rdx
+        movzbq  -2(%rbp), %rcx
+        movzbq  -1(%rbp), %rdx
         movq    %r12, %rsi
         movq    %rbx, %rdi
         call    pstrijcpy
@@ -123,7 +123,7 @@ run_func:
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
         movq    %r12, %rdi
         call    pstrlen
@@ -131,12 +131,12 @@ run_func:
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
         popq    %r12
         popq    %rbx
         
-        jmp done
+        jmp     done
 .L4:
         pushq   %rbx
         pushq   %r12
@@ -157,7 +157,7 @@ run_func:
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
         movq    %r12, %rdi
         call    pstrlen
@@ -165,14 +165,14 @@ run_func:
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
-        call printf
+        call    printf
 
         popq    %r12
         popq    %rbx
 
-        jmp done
+        jmp     done
 .L5:
-        subq    $16, %rsp
+        leaq    -16(%rsp), %rsp
 
         pushq   %rsi
         pushq   %rdx
@@ -186,8 +186,8 @@ run_func:
         movq    $0, %rax
         call    scanf
 
-        movsbq  -2(%rbp), %rcx
-        movsbq  -1(%rbp), %rdx
+        movzbq  -2(%rbp), %rcx
+        movzbq  -1(%rbp), %rdx
         popq    %rsi
         popq    %rdi
         call    pstrijcmp
@@ -197,7 +197,7 @@ run_func:
         movq    $0, %rax
         call    printf
 
-        jmp done
+        jmp     done
 .L6:
         movq    $invalid_option_str, %rdi
         movq    $0, %rax
