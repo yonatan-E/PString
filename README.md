@@ -20,5 +20,5 @@ Options details:
 *53* will get from the user two indices, and will call to *pstrijcpy*.  
 *54* will call to *swapCase*.  
 *55* will get from the user two indices, and will call to *pstrijcmp*.  
-The **run_main.s** file contains the *run_main* function, which gets two from the user two PStrings and a number of an option, and calls the run_func function with those arguments.  
+The **main.s** file contains the *main* function, which gets two from the user two PStrings and a number of an option, and calls the run_func function with those arguments.  
 The **pstring.h** file contains declerations about the library functions and about the PString struct.
