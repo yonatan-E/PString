@@ -6,7 +6,7 @@ The library contains the next functions:
 *pstrlen:* gets the length of a PString.  
 *replaceChar:* replaces all of the instances of a char in a PString with another char.  
 *pstrijcpy:* copies a substring of a PString to another PString.  
-*swapCase:* replaces all of the upper case letters in a PString to normal case letters.  
+*swapCase:* changes the case of all of the letters in a PString.
 *pstrijcmp:* compares lexicographily between substrings of two PStrings.  
 All of that functions are implemented in the **pstring.s** file.  
 
@@ -20,5 +20,5 @@ Options details:
 *53* will get from the user two indices, and will call to *pstrijcpy*.  
 *54* will call to *swapCase*.  
 *55* will get from the user two indices, and will call to *pstrijcmp*.  
-The **main.s** file contains the *main* function, which gets two from the user two PStrings and a number of an option, and calls the run_func function with those arguments.  
+The **main.s** file contains the *main* function, which gets from the user two PStrings and a number of an option, and calls the run_func function with those arguments.  
 The **pstring.h** file contains declerations about the library functions and about the PString struct.
