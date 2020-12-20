@@ -29,12 +29,12 @@ replaceChar:
         # %rcx holds the iterated index
         xorq    %rcx, %rcx
 loop_1:
-        # checking if the char at the current place is the old char
+        # checking if the char at the current place equals to the old char
         cmpb    1(%rdi, %rcx, ), %sil
-        jne     not_equals
-        # if the char at the current place is the old char, then overriding it with the new char
+        jne     end_of_iteration_1
+        # if the char at the current place equals to the old char, then replacing it with the new char
         movb    %dl, 1(%rdi, %rcx, )
-not_equals:
+end_of_iteration_1:
         # incrementing the index and checking if the end of pstring has been reached
         incb    %cl
         cmpb    %cl, %al
@@ -97,7 +97,7 @@ index_out_of_range_1:
         call    printf
         jmp     done_1
 
-# this function replaces all of the upper case letters in a given pstring to normal case letters.
+# this function changes the case of all of the letters in a given pstring.
 # params:
 # %rdi holds the address of the pstring
 # return val:
@@ -116,10 +116,21 @@ loop_3:
         jl      not_upper_case
         cmpb    $90, %dl
         jg      not_upper_case
-        # if the char at the current place is an upper case letter, then overriding it with a normal case letter
+        # if the char at the current place is an upper case letter, then changing it to a lower case letter
         addb    $32, %dl
         movb    %dl, 1(%rdi, %rcx, )
+        jmp     end_of_iteration_2
 not_upper_case:
+        # checking if the char at the current place is a lower case letter
+        movb    1(%rdi, %rcx, ), %dl
+        cmpb    $97, %dl
+        jl      end_of_iteration_2
+        cmpb    $122, %dl
+        jg      end_of_iteration_2
+        # if the char at the current place is a lower case letter, then changing it to an upper case letter
+        subb    $32, %dl
+        movb    %dl, 1(%rdi, %rcx, )
+end_of_iteration_2:
         # incrementing the index and checking if the end of the pstring has been reached
         incb    %cl
         cmpb    %cl, %al
