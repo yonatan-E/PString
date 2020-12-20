@@ -4,22 +4,22 @@ l2_str:     .string     "old char: %c, new char: %c, first string: %s, second st
 l3_str:     .string     "length: %d, string: %s\n"
 l5_str:     .string     "compare result: %d\n"
 invalid_option_str:     .string     "invalid option!\n"
-scanf_format_char:       .string     " %c"
+scanf_format_two_chars:       .string     " %c %c"
 scanf_format_int8:       .string     " %hhd"
         .align      8
 # the jump table for the switch-case
 .L10:
-        .quad       .L0
-        .quad       .L6
-        .quad       .L2
-        .quad       .L3
-        .quad       .L4
-        .quad       .L5
-        .quad       .L6
-        .quad       .L6
-        .quad       .L6
-        .quad       .L6
-        .quad       .L0
+        .quad       .L0         # case 50
+        .quad       .L6         # case 51 - invalid
+        .quad       .L2         # case 52
+        .quad       .L3         # case 53
+        .quad       .L4         # case 54
+        .quad       .L5         # case 55
+        .quad       .L6         # case 56 - invalid
+        .quad       .L6         # case 57 - invalid
+        .quad       .L6         # case 58 - invalid
+        .quad       .L6         # case 59 - invalid
+        .quad       .L0         # case 60
 
         .text
 # this function calls a specific pstring function according to the input.
@@ -35,11 +35,10 @@ run_func:
         # setting %rbp to the start of the current stack frame
         movq    %rsp, %rbp
 
-        # jumping to a label according to the option number
+        # jumping to a label according to the option number, using the jump table
         leaq    -50(%rdi), %rcx
         cmpq    $10, %rcx
         ja      .L6
-        # jumping using the jump table
         jmp     *.L10(, %rcx, 8)
 .L0:
         # allocating memory on the stack
@@ -74,24 +73,21 @@ run_func:
         movq    %rdx, %r12
 
         # scanning the old char and the new char
+        leaq    -2(%rbp), %rdx
         leaq    -1(%rbp), %rsi
-        movq    $scanf_format_char, %rdi
-        movq    $0, %rax
-        call    scanf
-        leaq    -2(%rbp), %rsi
-        movq    $scanf_format_char, %rdi
+        movq    $scanf_format_two_chars, %rdi
         movq    $0, %rax
         call    scanf
 
         # calling replaceChar with the first pstring, and with the scanned old char and new char
-        movzbq  -2(%rbp), %rdx
-        movzbq  -1(%rbp), %rsi
+        movsbq  -2(%rbp), %rdx
+        movsbq  -1(%rbp), %rsi
         movq    %rbx, %rdi
         call    replaceChar
         movq    %rax, %rbx
         # calling replaceChar with the second pstring, and with the scanned old char and new char
-        movzbq  -2(%rbp), %rdx
-        movzbq  -1(%rbp), %rsi
+        movsbq  -2(%rbp), %rdx
+        movsbq  -1(%rbp), %rsi
         movq    %r12, %rdi
         call    replaceChar
         movq    %rax, %r12
@@ -99,8 +95,8 @@ run_func:
         # printing "old char: %c, new char: %c, first string: %s, second string: %s\n"
         movq    %r12, %r8
         movq    %rbx, %rcx
-        movzbq  -2(%rbp), %rdx
-        movzbq  -1(%rbp), %rsi
+        movsbq  -2(%rbp), %rdx
+        movsbq  -1(%rbp), %rsi
         movq    $l2_str, %rdi
         movq    $0, %rax
         call    printf
