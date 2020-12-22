@@ -1,3 +1,5 @@
+        # 213192875 Yonatan Ehrenreich
+
         .section        .rodata
 l0_str:     .string     "first pstring length: %d, second pstring length: %d\n"
 l2_str:     .string     "old char: %c, new char: %c, first string: %s, second string: %s\n"
@@ -93,8 +95,8 @@ run_func:
         movq    %rax, %r12
 
         # printing "old char: %c, new char: %c, first string: %s, second string: %s\n"
-        movq    %r12, %r8
-        movq    %rbx, %rcx
+        leaq    1(%r12), %r8
+        leaq    1(%rbx), %rcx
         movsbq  -2(%rbp), %rdx
         movsbq  -1(%rbp), %rsi
         movq    $l2_str, %rdi
@@ -138,7 +140,7 @@ run_func:
         # printing "length: %d, string: %s\n" for the first pstring
         movq    %rbx, %rdi
         call    pstrlen
-        movq    %rbx, %rdx
+        leaq    1(%rbx), %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
@@ -146,7 +148,7 @@ run_func:
         # printing "length: %d, string: %s\n" for the second pstring
         movq    %r12, %rdi
         call    pstrlen
-        movq    %r12, %rdx
+        leaq    1(%r12), %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
@@ -177,7 +179,7 @@ run_func:
         # printing "length: %d, string: %s\n" for the first pstring
         movq    %rbx, %rdi
         call    pstrlen
-        movq    %rbx, %rdx
+        leaq    1(%rbx), %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
@@ -185,7 +187,7 @@ run_func:
         # printing "length: %d, string: %s\n" for the second pstring
         movq    %r12, %rdi
         call    pstrlen
-        movq    %r12, %rdx
+        leaq    1(%r12), %rdx
         movq    %rax, %rsi
         movq    $l3_str, %rdi
         movq    $0, %rax
